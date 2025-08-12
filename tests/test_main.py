@@ -1,7 +1,8 @@
 import pytest
 from fastapi.testclient import TestClient
 
-from my_project.main import app, fake_db
+from my_project import fake_db
+from my_project.main import app
 
 client = TestClient(app=app)
 
@@ -14,7 +15,7 @@ def data_example():
 @pytest.fixture(autouse=True)
 def fake_db_clear():
     fake_db.clear()
-    return fake_db
+    yield
 
 
 @pytest.fixture
@@ -39,21 +40,28 @@ def test_read_main():
     assert response.json() == {"message": "Hello World"}
 
 
-def test_create_item(data_example, token_header):
-    response = client.post("/", headers=token_header, json=data_example)
+class TestItem:
 
-    assert response.status_code == 200
-    assert response.json() == data_example
+    def test_create_item(self, data_example, token_header):
+        response = client.post("/item/", headers=token_header, json=data_example)
 
+        assert response.status_code == 200
+        assert response.json() == data_example
 
-@pytest.mark.parametrize(
-    "url, data",
-    [
-        ("/bar", {"id": "bar", "title": "Bar", "description": "The bartenders"}),
-        ("/foo", {"id": "foo", "title": "Foo", "description": "There goes my hero"}),
-    ],
-)
-def test_by_id(add_db, token_header, url, data):
-    response = client.get(url, headers=token_header)
-    assert response.status_code == 200
-    assert response.json() == data
+    @pytest.mark.parametrize(
+        "url, data",
+        [
+            (
+                "/item/bar/",
+                {"id": "bar", "title": "Bar", "description": "The bartenders"},
+            ),
+            (
+                "/item/foo/",
+                {"id": "foo", "title": "Foo", "description": "There goes my hero"},
+            ),
+        ],
+    )
+    def test_by_id(self, add_db, token_header, url, data):
+        response = client.get(url, headers=token_header)
+        assert response.status_code == 200
+        assert response.json() == data
