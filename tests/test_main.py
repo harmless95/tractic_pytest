@@ -15,8 +15,13 @@ def fake_db_clear():
     return fake_db
 
 @pytest.fixture
-def add_db(data_example):
-    fake_db[data_example["id"]] = data_example
+def add_db():
+    fake_db.update(
+        {
+            "foo": {"id": "foo", "title": "Foo", "description": "There goes my hero"},
+            "bar": {"id": "bar", "title": "Bar", "description": "The bartenders"},
+        }
+    )
     return fake_db
 
 @pytest.fixture
