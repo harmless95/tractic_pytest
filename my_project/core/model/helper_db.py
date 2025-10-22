@@ -31,7 +31,7 @@ class DataBaseConnect:
             await session.close()
 
 
-helper_db = DataBaseConnect(
+db_helpers = DataBaseConnect(
     url=str(setting.db.url),
     echo=setting.db.echo,
     echo_pool=setting.db.echo_pool,
