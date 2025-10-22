@@ -26,7 +26,11 @@ async def get_product_by_id(
     product_id: UUID,
     session: AsyncSession,
 ) -> ReadProduct:
-    stmt = select(Product).options(selectinload(Product.category)).where(Product.id == product_id)
+    stmt = (
+        select(Product)
+        .options(selectinload(Product.category))
+        .where(Product.id == product_id)
+    )
     result = await session.scalars(stmt)
     product = result.first()
     if not product:
