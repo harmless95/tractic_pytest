@@ -7,7 +7,40 @@ from sqlalchemy import select
 from fastapi import HTTPException, status
 
 from core.model import Product, Category
-from core.schema.product_schema import ReadProduct, UpdateProduct
+from core.schema.product_schema import ReadProduct, UpdateProduct, CreateProduct
+
+
+async def create_new_product(
+    data_product: CreateProduct,
+    session: AsyncSession,
+) -> ReadProduct:
+    category_name = data_product.category.name
+    stmt_category = select(Category).where(Category.name == category_name)
+    result_category = await session.scalars(stmt_category)
+    category = result_category.first()
+    if not category:
+        category = Category(name=category_name)
+        session.add(category)
+        await session.commit()
+        await session.refresh(category)
+
+    stmt_product = select(Product).where(Product.name == data_product.name)
+    result_product = await session.scalars(stmt_product)
+    product = result_product.first()
+    if product:
+        raise HTTPException(
+            status_code=status.HTTP_409_CONFLICT,
+            detail=f"Invalid {data_product.name!r} the product already exists",
+        )
+    product = Product(
+        name=data_product.name,
+        price=data_product.price,
+        category=category,
+    )
+    session.add(product)
+    await session.commit()
+    await session.refresh(product, attribute_names=["category"])
+    return ReadProduct.model_validate(product)
 
 
 async def get_all_product(session: AsyncSession) -> Sequence[ReadProduct]:
