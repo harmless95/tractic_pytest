@@ -5,6 +5,8 @@ package-mode=false
 python="^3.12"
 fastapi = "^0.116.1"
 uvicorn = "^0.35.0"
+alembic = "^1.17.0"
+pydantic-settings = "^2.11.0"
 
 [tool.poetry.group.dev.dependencies]
 pytest = "^8.4.1"
