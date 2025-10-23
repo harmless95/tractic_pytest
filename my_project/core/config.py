@@ -11,6 +11,11 @@ LOG_DEFAULT_FORMAT = "[%(asctime)s.%(msecs)03d] %(module)10s:%(lineno)-3d %(leve
 BASE_DIR = Path(__file__).resolve().parent.parent
 
 
+class RunConfig(BaseModel):
+    host: str = "0.0.0.0"
+    port: int = 8000
+
+
 class DataBaseConfig(BaseModel):
     url: PostgresDsn
     echo: bool = False
@@ -43,9 +48,13 @@ class Settings(BaseSettings):
         env_file=(
             BASE_DIR / ".env.template",
             BASE_DIR / ".env",
-        )
+        ),
+        case_sensitive=False,
+        env_nested_delimiter="__",
+        env_prefix="APP_CONFIG__",
     )
     db: DataBaseConfig
+    run: RunConfig = RunConfig()
     log: LoggingConfig = LoggingConfig()
 
 
