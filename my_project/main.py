@@ -1,8 +1,19 @@
 import uvicorn
 from fastapi import FastAPI
+from contextlib import asynccontextmanager
+
+from core.config import setting
+from core.model import db_helpers
+from my_project.api.routers import all_routers
 
 
-from .api.routers import all_routers
+@asynccontextmanager
+async def lifespan(app: FastAPI):
+    try:
+        yield
+    finally:
+        await db_helpers.dispose()
+
 
 app = FastAPI()
 app.include_router(router=all_routers)
@@ -14,4 +25,8 @@ async def get_hello():
 
 
 if __name__ == "__main__":
-    uvicorn.run("main:app", host="0.0.0.0", port=8000)
+    uvicorn.run(
+        "main:app",
+        host=setting.run.host,
+        port=setting.run.port,
+    )
