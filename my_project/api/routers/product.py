@@ -23,7 +23,7 @@ router = APIRouter(prefix="/product", tags=["Product"])
 )
 async def create_product(
     data_product: CreateProduct,
-    session: Annotated[AsyncSession, Depends(db_helpers)],
+    session: Annotated[AsyncSession, Depends(db_helpers.getter_session)],
 ) -> ReadProduct:
     return await create_new_product(
         data_product=data_product,
@@ -37,7 +37,7 @@ async def create_product(
     status_code=status.HTTP_200_OK,
 )
 async def get_products(
-    session: Annotated[AsyncSession, Depends(db_helpers)],
+    session: Annotated[AsyncSession, Depends(db_helpers.getter_session)],
 ) -> Sequence[ReadProduct]:
     return await get_all_product(session=session)
 
@@ -49,7 +49,7 @@ async def get_products(
 )
 async def get_product(
     product_id: UUID,
-    session: Annotated[AsyncSession, Depends(db_helpers)],
+    session: Annotated[AsyncSession, Depends(db_helpers.getter_session)],
 ) -> ReadProduct:
     return await get_product_by_id(
         product_id=product_id,
@@ -64,7 +64,7 @@ async def get_product(
 )
 async def update_product_partial(
     data_update: UpdateProduct,
-    session: Annotated[AsyncSession, Depends(db_helpers)],
+    session: Annotated[AsyncSession, Depends(db_helpers.getter_session)],
     data_product=Depends(get_product),
 ) -> ReadProduct:
     return await update_product_by_id(
@@ -82,7 +82,7 @@ async def update_product_partial(
 )
 async def update_product(
     data_update: UpdateProduct,
-    session: Annotated[AsyncSession, Depends(db_helpers)],
+    session: Annotated[AsyncSession, Depends(db_helpers.getter_session)],
     data_product=Depends(get_product),
 ) -> ReadProduct:
     return await update_product_by_id(
@@ -97,7 +97,7 @@ async def update_product(
     status_code=status.HTTP_204_NO_CONTENT,
 )
 async def delete_product(
-    session: Annotated[AsyncSession, Depends(db_helpers)],
+    session: Annotated[AsyncSession, Depends(db_helpers.getter_session)],
     data_product=Depends(get_product),
 ) -> None:
     await session.delete(data_product)
