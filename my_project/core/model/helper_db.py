@@ -25,7 +25,7 @@ class DataBaseConnect:
     async def dispose(self) -> None:
         await self.async_engine.dispose()
 
-    async def getter_session(self) -> AsyncGenerator[AsyncSession | None]:
+    async def getter_session(self) -> AsyncGenerator[AsyncSession | None, None]:
         async with self.fabric_session() as session:
             yield session
             await session.close()
