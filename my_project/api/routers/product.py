@@ -10,6 +10,7 @@ from api.CRUD.crud_product import (
     get_product_by_id,
     update_product_by_id,
 )
+from core.model import Product
 from core.model.helper_db import db_helpers
 from core.schema.product_schema import CreateProduct, ReadProduct, UpdateProduct
 
@@ -50,7 +51,7 @@ async def get_products(
 async def get_product(
     product_id: UUID,
     session: Annotated[AsyncSession, Depends(db_helpers.getter_session)],
-) -> ReadProduct:
+) -> Product:
     return await get_product_by_id(
         product_id=product_id,
         session=session,

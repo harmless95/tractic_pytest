@@ -58,7 +58,7 @@ async def get_all_product(session: AsyncSession) -> Sequence[ReadProduct]:
 async def get_product_by_id(
     product_id: UUID,
     session: AsyncSession,
-) -> ReadProduct:
+) -> Product:
     stmt = (
         select(Product)
         .options(selectinload(Product.category))
@@ -71,7 +71,7 @@ async def get_product_by_id(
             status_code=status.HTTP_404_NOT_FOUND,
             detail=f"Invalid id: {product_id!r} not found",
         )
-    return ReadProduct.model_validate(product)
+    return product
 
 
 async def update_product_by_id(
@@ -82,7 +82,7 @@ async def update_product_by_id(
 ) -> ReadProduct:
     for name, value in data_update.model_dump(exclude_unset=partial).items():
         if isinstance(value, dict) and name == "category":
-            category_name = value.get(name)
+            category_name = value.get("name")
             stmt = select(Category).where(Category.name == category_name)
             result = await session.scalars(stmt)
             category = result.first()
